@@ -2,7 +2,8 @@ import { KeyboardAvoidingView, StyleSheet, View } from "react-native";
 import React, { useState, useLayoutEffect } from "react";
 import { Button, Input, Text } from "@rneui/base";
 import { StatusBar } from "expo-status-bar";
-import { auth } from "firebase/auth";
+import { auth } from "../firebase";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 
 const RegisterScreen = ({ navigation }) => {
   const [name, setName] = useState("");
@@ -11,24 +12,28 @@ const RegisterScreen = ({ navigation }) => {
   const [imageUrl, setImageUrl] = useState("");
 
   const register = () => {
-    auth
-      .createUserWithEmailAndPassword(auth, email, password)
+    createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        userCredential.user.update({
+        updateProfile(userCredential.user, {
           displayName: name,
           photoURL:
             imageUrl ||
             `https://ui-avatars.com/api/?name=${name.replace(" ", "+")}`,
-        });
+        })
+          .then(() => {
+            console.log("PROFILE UPDATED");
+          })
+          .catch(function (error) {
+            console.log(error.message, 7000);
+          });
       })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
 
-        alert(`${error.message} ${error.code}`);
+      .catch(function (error) {
+        console.log(error.message, 7000);
       });
   };
 
+  // useLayoutEffect works before printing the screen useEffect works after
   useLayoutEffect(() => {
     navigation.setOptions({
       // If you want to change screen options

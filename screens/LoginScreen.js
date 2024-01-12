@@ -3,7 +3,8 @@ import React, { useState } from "react";
 import { Button, Input, Image } from "@rneui/base";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
-import { auth } from "firebase";
+import { auth } from "../firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -17,7 +18,15 @@ const LoginScreen = ({ navigation }) => {
     });
   }, []);
 
-  const signIn = () => {};
+  const signIn = () => {
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        console.log("Signed");
+      })
+      .catch((error) => {
+        console.log(error.code, error.message);
+      });
+  };
 
   return (
     <KeyboardAvoidingView behavior="padding" style={styles.container}>
