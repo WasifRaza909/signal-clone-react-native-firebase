@@ -4,7 +4,7 @@ import React from "react";
 
 const CustomListItem = ({ id, chatName, enterChat }) => {
   return (
-    <ListItem key={id}>
+    <ListItem onPress={() => enterChat(id, chatName)} key={id} bottomDivider>
       <Avatar
         rounded
         source={{

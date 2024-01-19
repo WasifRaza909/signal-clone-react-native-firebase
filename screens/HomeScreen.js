@@ -30,13 +30,12 @@ const HomeScreen = ({ navigation }) => {
 
     const unsubscribe = onSnapshot(query, (snapshot) => {
       if (snapshot.docs.length > 0) {
-        snapshot.docs.map((doc) =>
-          setChats((prevChats) => [
-            ...prevChats,
-            { id: doc.id, data: doc.data() },
-          ])
-        ); // Log document data
-        // Process snapshot data here
+        setChats(
+          snapshot.docs.map((doc) => ({
+            id: doc.id,
+            data: doc.data(),
+          }))
+        );
       } else {
         console.log("No chat documents found");
       }
@@ -81,13 +80,25 @@ const HomeScreen = ({ navigation }) => {
     });
   }, [navigation]);
 
+  const enterChat = (id, chatName) => {
+    navigation.replace("Chat", {
+      id,
+      chatName,
+    });
+  };
+
   return (
     <SafeAreaView>
       <ScrollView>
         {chats.length > 0 ? (
-          <ScrollView>
+          <ScrollView style={styles.container}>
             {chats.map(({ id, data: { chatName } }) => (
-              <CustomListItem id={id} chatName={chatName} key={id} />
+              <CustomListItem
+                id={id}
+                chatName={chatName}
+                key={id}
+                enterChat={enterChat}
+              />
             ))}
           </ScrollView>
         ) : (
@@ -100,4 +111,8 @@ const HomeScreen = ({ navigation }) => {
 
 export default HomeScreen;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    height: "100%",
+  },
+});
