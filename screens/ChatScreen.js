@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
+  Platform,
 } from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Avatar } from "react-native-elements";
@@ -45,7 +46,11 @@ const ChatScreen = ({ navigation, route }) => {
         >
           <Avatar
             rounded
-            source={{ uri: "https://randomuser.me/portraits/men/10.jpg" }}
+            source={{
+              uri:
+                messages[0]?.data.photoURL ||
+                "https://randomuser.me/portraits/men/10.jpg",
+            }}
           />
           <Text style={{ color: "white", marginLeft: 10, fontWeight: 700 }}>
             {route.params.chatName}
@@ -152,7 +157,8 @@ const ChatScreen = ({ navigation, route }) => {
   }, [messages]);
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-      <StatusBar style="light" />
+      {Platform.OS !== "web" && <StatusBar style="light" />}
+
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.container}
@@ -160,10 +166,10 @@ const ChatScreen = ({ navigation, route }) => {
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <>
-            <ScrollView>
+            <ScrollView contentContainerStyle={{ paddingTop: 15 }}>
               {messages.map(({ data, id }) =>
                 data.email === auth.currentUser.email ? (
-                  <View key={data.id} style={styles.reciever}>
+                  <View key={id} style={styles.reciever}>
                     <Avatar
                       size={30}
                       position="absolute"
@@ -181,7 +187,7 @@ const ChatScreen = ({ navigation, route }) => {
                     <Text style={styles.recieverText}>{data.message}</Text>
                   </View>
                 ) : (
-                  <View key={data.id} style={styles.sender}>
+                  <View key={id} style={styles.sender}>
                     <Avatar
                       size={30}
                       position="absolute"
@@ -197,6 +203,7 @@ const ChatScreen = ({ navigation, route }) => {
                       source={{ uri: data.photoURL }}
                     />
                     <Text style={styles.senderText}>{data.message}</Text>
+                    <Text style={styles.senderName}>{data.displayName}</Text>
                   </View>
                 )
               )}
@@ -255,6 +262,20 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     maxWidth: "80%",
     position: "relative",
+  },
+
+  senderText: {
+    color: "white",
+    fontWeight: "500",
+    marginLeft: 10,
+    marginBottom: 15,
+  },
+
+  senderName: {
+    left: 10,
+    paddingRight: 10,
+    fontSize: 10,
+    color: "white",
   },
 
   sender: {

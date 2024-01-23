@@ -14,6 +14,9 @@ const RegisterScreen = ({ navigation }) => {
   const register = () => {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
+        console.log(
+          `https://ui-avatars.com/api/?name=${name.replace(" ", "+")}`
+        );
         updateProfile(userCredential.user, {
           displayName: name,
           photoURL:
